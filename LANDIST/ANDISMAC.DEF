@@ -1,0 +1,14 @@
+LIBRARY ANDISMAC
+
+PROTMODE
+
+SEGMENTS
+ HEADER         CLASS 'DATA'
+ _DATA          CLASS 'DATA'
+ CONST          CLASS 'CONST'
+ _BSS           CLASS 'BSS'
+ END_DATA       CLASS 'END_DATA'
+ _TEXT          CLASS 'CODE'
+ INITCODE       CLASS 'CODE'
+
+

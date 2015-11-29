@@ -1,0 +1,13 @@
+[ANDISMAC]
+ Type       = NDIS_SNGL
+ Title      = Sample ANDIS MAC Driver
+ Version    = 1.00
+ DriverName = ANDISMC$
+ CopyFile   = ADS.MSG
+ NoBind     = Yes
+
+[File]
+ Name     = ANDISMAC.OS2
+ Path     = \IBMCOM\MACS
+
+

@@ -1,0 +1,851 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                                         IBM LAN Systems
+                                                          LAN SERVER API
+                                                         SAMPLE PROGRAMS
+
+
+
+
+
+
+
+
+
+
+     CONTENTS
+
+
+       LAN SYSTEMS API TOOLKIT SAMPLE PROGRAMS . . . . . . . . . . . . 1
+       PROGRAMMING ENVIRONMENT   . . . . . . . . . . . . . . . . . . . 1
+       PROGRAMMING STYLE   . . . . . . . . . . . . . . . . . . . . . . 2
+       PROGRAM FILES   . . . . . . . . . . . . . . . . . . . . . . . . 3
+
+       LAN SYSTEMS API TOOLKIT SAMPLE PROGRAMS FOR LAN SERVER  . . . . 4
+       ACCSINFO  . . . . . . . . . . . . . . . . . . . . . . . . . . . 5
+       FILEENUM  . . . . . . . . . . . . . . . . . . . . . . . . . . . 6
+       ML  . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 7
+       MLOGON  . . . . . . . . . . . . . . . . . . . . . . . . . . . . 8
+       SADMCMD   . . . . . . . . . . . . . . . . . . . . . . . . . . . 9
+       SHAREDEL   . . . . . . . . . . . . . . . . . . . . . . . . . . 10
+       STATS  . . . . . . . . . . . . . . . . . . . . . . . . . . . . 11
+       STATS32  . . . . . . . . . . . . . . . . . . . . . . . . . . . 12
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                                            Contents i
+
+
+
+
+
+     LAN SYSTEMS API TOOLKIT SAMPLE PROGRAMS
+
+     This document contains descriptions of sample programs that use the
+     OS/2 LAN Server 3.0 application programming interfaces (LAN APIs).
+
+
+     PROGRAMMING ENVIRONMENT
+
+     All of the sample programs have been compiled using the following:
+
+     þ  IBM OS/2 Verison 2.1
+
+     þ  IBM C/C++ Set/2 Version 2.01
+
+     þ  IBM OS/2 Toolkit Version 2.1
+
+     þ  IBM LAN Systems API Toolkit
+
+     Note:
+
+     To successfully compile the sample programs, the compiler
+     environment varibles LIB and INCLUDE must be changed to contain
+     entries for the LS API Toolkit.  This change may be done in
+     CONFIG.SYS by altering the LIB and INCLUDE statements, as follows:
+
+     þ  LIB=...;c:\LSAPITK\OS2\LIB;...
+
+     þ  INCLUDE=...;c:\LSAPITK\OS2\INCLUDE;...
+
+     Or they could be changed on the command line for the current session
+     using the SET command, as follows:
+
+     þ  SET LIB=c:\LSAPITK\OS2\LIB;%LIB%
+
+     þ  SET INCLUDE=c:\LSAPITK\OS2\INCLUDE;%INCLUDE%
+
+     Note that this assumes that the LS API ToolKit was installed at
+     the root of the C: drive.  If the Toolkit was installed on another
+     drive or path the c: in the above examples would have to be changed
+     to reflect the difference.
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                           PROGRAMMING ENVIRONMENT   1
+
+
+
+
+
+     PROGRAMMING STYLE
+
+     The programs use some common OS/2 conventions:
+
+     þ  Standard OS/2 variable naming conventions.  Each variable has a
+        lowercase prefix that indicates the variable type. For example,
+        pchBuf is a pointer of type char or PCHAR.
+
+     þ  Standard OS/2 definitions for variables.  For example, PUSHORT
+        pusRc < = > unsigned short *pusRc.
+
+     The definitions are contained in the OS2DEF.H file.  This file is
+     installed with "OS/2 Developer's Toolkit".
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                                   Programming Style 2
+
+
+
+
+
+     MAKEFILE AND SOURCE CODE FILES
+
+     Program listings include makefiles and source code files.  The
+     types of files are :
+
+     þ  PROGRAM.MAK - IBM C Set/2 NMAKE make file
+
+     þ  PROGRAM.DEF - Module definition file
+
+     þ  PROGRAM.H - Program-specific include file
+
+     þ  PROGRAM.C - C source code listing
+
+     þ  PROGRAM.DLG - Presentation Manager dialogue definition file
+
+     þ  PROGRAM.RC - Presentation Manager resource compiler definition
+        file.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                                      PROGRAM FILES  3
+
+
+
+
+     LAN SYSTEMS API TOOLKIT SAMPLE PROGRAMS FOR OS/2 LAN SERVER
+
+     There are eight short sample programs in the Toolkit that are
+     intended to provide an introduction to, and demonstrate the use
+     of, the individual API functions.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+         LAN SYSTEMS API TOOLKIT SAMPLE PROGRAMS FOR OS/2 LAN SERVER 4
+
+
+
+     ACCSINFO
+
+     ACCSINFO returns the audit profile and all access control profiles
+     (ACPs) for a particular resource. The user may alter the auditing
+     level and any given ACP.
+
+     This program can operate both locally and remotely. The machine
+     running this program must be logged on to the LAN with
+     administrator authority.
+
+     The syntax of the call is as follows.
+
+      For a remote server:
+                 accsinfo <servername> <resourcename>
+
+      For a local server:
+                 accsinfo <resourcename>
+
+      Where
+                 servername = \\<server machinename>
+                 resourcename = <drive>:\\<pathname>
+                            or   \\pipe\\<pipename>
+                            or   \\print\\<queuename>
+
+     ACCSINFO uses the NetAPI functions NetAccessGetInfo and
+     NetAccessSetInfo.
+
+     Two separate calls are performed to use the NetAccessGetInfo
+     function.  In the first call, a zero-byte information buffer is
+     provided.  This guarantees that NetAccessGetInfo cannot return
+     successfully.  Instead it returns with an error return code of
+     NERR_BufTooSmall.  However, a valid Totalavail field is returned,
+     which indicates exactly how many bytes of information are
+     available.  The proper amount of space can now be allocated for the
+     information buffer, and a second call will return a valid
+     access_info structure to the buffer.
+
+     The following files, required to run this program, are in the
+     ACCSINFO subdirectory.
+
+     þ  ACCSINFO.MAK - IBM C Set/2 NMAKE makefile.
+
+     þ  ACCSINFO.C - C source code for the main program.
+
+     þ  ERRMSG.C - C source code for the Error_message function.
+
+     The required libraries are :
+
+     þ  NETAPI.LIB - NetAPI library
+
+
+
+
+
+
+                                                            ACCSINFO 5
+
+
+
+     FILEENUM
+
+     FILEENUM returns information on open files on a specific server.
+     You may choose to view a list of all open files or to restrict the
+     list by device path or user. Both the path and the user ID may be
+     left unspecified to get information on all files opened by all
+     users on the specified server.
+
+     The syntax of the call is as follows.
+
+      For a remote server:
+                 fileenum <servername> <basepath> <username>
+
+      For a local server:
+                 fileenum <NULL> <basepath> <username>
+         or
+                 fileenum
+
+      Where
+                 servername = \\<server machinename>
+                 basepath = <drive>:\<pathname>
+
+     This program must be run by an administrator.  The opened files
+     that are to be listed must be on a redirected drive on the target
+     server.
+
+     FILEENUM uses the NetAPI function NetFileEnum2.  NetFileEnum2 is
+     different from every other NetAPI function because it allows access
+     of more than 64KB of information.  Using repeated NetFileEnum2
+     calls and a special pointer used by the FRK_INIT function,
+     NetFileEnum2 retrieves successive 64KB blocks of information.  The
+     "OS/2 LAN Server Version 3.0 Application Programmer's Reference"
+     contains a brief description of the use of the FRK_INIT function.
+
+     The following files, required to run this program, are in the
+     FILENUM subdirectory :
+
+     þ  FILEENUM.MAK - IBM C Set/2 NMAKE makefile.
+
+     þ  FILEENUM.C - C source code for the main program.
+
+     þ  ERRMSG.C - C source code for the Error_message function.
+
+     The required libraries are :
+
+     þ  NETAPI.LIB - NetAPI library
+
+
+
+
+
+
+
+
+
+                                                             FILENUM 6
+
+
+
+     ML
+
+     This program logs on a user.  The user name, password (if
+     required), and domain name are passed as command line parameters to
+     the program.
+
+     The syntax of the call is as follows.
+
+           ml <username> <password> <domainname>
+       or
+           ml <username> <domainname>
+
+     The following files, required to run this program, are in the
+     ML subdirectory:
+
+     þ  ML.MAK - IBM C Set/2 NMAKE makefile.
+
+     þ  ML.C - Source code for this program.
+
+     The required library is:
+
+     þ  UPM.LIB - UPM library
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                                                  ML 7
+
+
+
+     MLOGON
+
+     This program logs on a user, waits for the Spacebar to be pressed,
+     and logs off the user. The user name, password (if required), and
+     domain name are passed as command line parameters to the program.
+
+     The syntax of the call is as follows.
+
+         mlogon <username> <password> <domainname>
+      or
+         mlogon <username> <domainname>
+
+     The following files, required to run this program, are in the
+     MLOGON subdirectory:
+
+     þ  MLOGON.MAK - IBM C Set/2 NMAKE makefile.
+
+     þ  MLOGON.C - Source code for this program.
+
+     The required library is:
+
+     þ  UPM.LIB - UPM library
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                                              MLOGON 8
+
+
+
+     SADMCMD
+
+     This program executes a command on a remote or local server. The
+     command to be executed on the server is passed as a command line
+     parameter to this program, but it must reside on a disk visible to
+     the target server.
+
+     The syntax of the call is:
+
+      sadmcmd \\<targetservername> <command>
+
+     SADMCMD uses the NetAPI function NetServerAdminCommand.
+
+     The following files, required to run this program, are in the
+     SADMCMD subdirectory :
+
+     þ  SACMCMD.MAK - IBM C Set/2 NMAKE makefile.
+
+     þ  SADMCMD.C - Source code for this program.
+
+     The required library is :
+
+     þ  NETAPI.LIB - NetAPI library
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                                             SADMCMD 9
+
+
+
+     SHAREDEL
+
+     SHAREDEL is called with a device name and (optionally) a netname.
+     The syntax of the call is as follows.
+
+      For a remote server:
+                 sharedel <servername> <devicename> <netname>
+         or
+                 sharedel <servername> <devicename>
+
+      For a local server:
+                 sharedel <devicename> <netname>
+         or
+                 sharedel <devicename>
+
+      Where
+                 servername = \\<server machinename>
+                 devicename = <devicename> (for example, C: OR LPT1:)
+                 netname = <alias name or netname>
+
+     SHAREDEL checks that the device is shared and returns basic
+     information on the device type.  The user may stop sharing for a
+     particular netname associated with that device.
+
+     SHAREDEL uses two of the most simple NetAPI functions,
+     NetShareCheck and NetShareDel.  There are no NetAPI data structures
+     used in this program.
+
+     The following files, required to run this program, are in the
+     NETAPIFS subdirectory :
+
+     þ  SHAREDEL.MAK - IBM C Set/2 NMAKE makefile.
+
+     þ  SHAREDEL.C - C source code for the main program.
+
+     þ  ERRMSG.C - C source code for the Error_message function.
+
+     The required libraries are :
+
+     þ  NETAPI.LIB - NetAPI library for the OS/2 program
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                                           SHAREDEL 10
+
+
+
+     STATS
+
+     STATS is designed to be used by an administrator logged on to an
+     OS/2 LAN Server or OS/2 LAN Requester.  STATS is a monitor
+     program that allows the administrator to obtain statistics on the
+     loading and performance of a local or remote OS/2 LAN Server.
+
+     The syntax of the call is:
+
+             stats \\<servername> <servicename> <options>
+      Where
+             servername = the name of the server to be monitored.
+             servicename - must be SERVER or REQUESTER.  This
+                           parameter must be entered in uppercase
+                           characters.  The entire name may be entered,
+                           or any number of characters (beginning with
+                           the first letter) may be entered.
+             options - may be
+                         R - Reset (clear) statistics at program startup
+                         C - Clear statistics at each display interval
+                         D - Display the difference between each set of
+                             statistics without clearing the statistics
+                         T <nn> - Set the display interval to be nn seconds.
+
+     STATS uses only one NetAPI function, NetStatisticsGet2.
+
+     The NetStatisticsGet2 function retrieves information from both
+     the requester and the server portions of a server machine.  Note
+     that these two sets of information, even when they are in the
+     same machine, are quite different.
+
+     The following files, required to run this program, are in the
+     STATS subdirectory:
+
+     þ  STATS.MAK - IBM C Set/2 NMAKE makefile.
+
+     þ  STATS.C - C source code for the main program.
+
+     þ  ERRMSG.C - C source code for the Error_message function.
+
+     The required library is:
+
+     þ  NETAPI.LIB - NetAPI library
+
+
+
+
+
+
+
+
+
+
+
+
+                                                              STATS 11
+
+
+
+     STATS32 : A 32-BIT SAMPLE PROGRAM
+
+     In order to provide an example of converting a 16-bit program to
+     a 32-bit program that uses the LAN APIs, a 16-bit sample programs,
+     STATS, has been converted to a 32-bit program, STATS32.  The
+     function of STATS32 is exactly like that of STATS.  That is, it
+     is designed to be used by an administrator logged on to an OS/2
+     LAN Server or OS/2 LAN Requester.  STATS32 is a monitor program
+     that allows the administrator to obtain statistics on the loading
+     and performance of a local or remote OS/2 LAN Server.
+
+     Note: the STATS sample that is described above, is a native 32bit
+     program that calls the 16bit APIs (just like all the othe sample
+     programs in the LS API Toolkit.)  The purpose of STATS32 is to
+     demonstrate the changes necessary to make a 16bit program into
+     a 32bit program.
+
+     The syntax of the call is:
+
+
+              stats32 \\<servername> <servicename> <options>
+      Where
+             servername = the name of the server to be monitored.
+             servicename - must be SERVER or REQUESTER.  This
+                          parameter must be entered in uppercase
+                          characters.  The entire name may be entered,
+                          or any number of characters (beginning with
+                          the first letter) may be entered.
+             options - may be
+                         R - Reset (clear) statistics at program startup
+                         C - Clear statistics at each display interval
+                         D - Display the difference between each set of
+                             statistics without clearing the statistics
+                         T <nn> - Set the display interval to be nn seconds.
+
+     STATS32 uses only one NetAPI function, NetStatisticsGet2.
+
+     The NetStatisticsGet2 function retrieves information from both
+     the requester and the server portions of a server machine.  Note
+     that these two sets of information, even when they are in the
+     same machine, are quite different.
+
+     In order to demonstrate what changes were necessary to convert
+     STATS to a 32-bit program, statements in the source file
+     (STATS32.C) that were changed from the 16-bit version (STATS.C)
+     are marked with $32C; statements that were deleted have been
+     commented out and marked with $32D; statements that were added
+     are marked with $32A.
+
+     For information on calling the LAN APIs, which are 16-bit, from a
+     32-bit program, refer to the  "LAN Server Version 3.0 Application
+     Programmer's Reference."  In the example program, the makefile
+     for STATS32 uses the \DINCL_32 compiler option to allow STATS32
+
+
+                                                            STATS32 12
+
+
+
+     to call the LAN APIs.  However, the statement "#define INCL_32"
+     could have been added to the source program instead, as it is in
+     the other sample programs.
+
+     For information on writing 32-bit programs, refer to the "IBM C
+     Set/2 User's Guide."  For more information on converting 16-bit
+     programs to 32-bit programs, refer to the "IBM C Set/2 Migration
+     Guide."
+
+     The following files, required to run this program, are in the
+     32BIT subdirectory:
+
+     þ  STATS32.MAK - IBM C Set/2 Version 1.0 makefile.
+
+     þ  STATS32.C - C source code for the main program.
+
+     þ  ERRMSG32.C - C source code for the Error_message function.
+
+     The required library is:
+
+     þ  NETAPI.LIB - NetAPI library for the OS/2 program
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                                                            STATS32 13
+

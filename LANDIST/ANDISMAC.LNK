@@ -1,0 +1,10 @@
+macasm.obj+
+macinit.obj+
+macndis.obj+
+macandis.obj+
+/a:16 /nod /map /exepack /packd /far
+andismac.os2
+andismac.map
+doscalls.lib
+andismac.def
+

@@ -1,0 +1,27 @@
+
+MAKEFILE  = makefile
+LINKFILE  = andismac.lnk
+DEFFILE   = andismac.def
+OPTIONS   = /c /G2s /Asfw /Zp /Fc /W3
+
+all: andismac.os2 ads.msg
+
+andismac.os2: macasm.obj macinit.obj macndis.obj macandis.obj {$(DPATH)}$(LINKFILE) {$(DPATH)}$(DEFFILE) {$(DPATH)}$(MAKEFILE)
+   link @$(LINKFILE)
+
+macasm.obj: macasm.asm {$(DPATH)}$(MAKEFILE)
+   masm macasm,,macasm;
+
+macinit.obj: macinit.c macdef.h macproto.h andis.h ndis.h typedef.h {$(DPATH)}$(MAKEFILE)
+   cl $(OPTIONS) macinit.c
+
+macndis.obj: macndis.c macdef.h macproto.h ndis.h typedef.h {$(DPATH)}$(MAKEFILE)
+   cl $(OPTIONS) macndis.c
+
+macandis.obj: macandis.c macdef.h macproto.h andis.h ndis.h typedef.h {$(DPATH)}$(MAKEFILE)
+   cl $(OPTIONS) macandis.c
+
+ads.msg : ads.txt
+   mkmsgf ads.txt ads.msg
+
+

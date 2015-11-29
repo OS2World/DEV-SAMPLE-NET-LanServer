@@ -1,0 +1,10 @@
+ADS
+ADS0000I: Installing ANDISMAC
+ADS0001I: ANDISMAC is installed
+ADS0002I: ANDISMAC failed to install
+ADS0003E: Can not open PROTMAN
+ADS0004E: Error getting config data
+ADS0005I: Initializing port: %1
+ADS0006E: Can not register port to PROTMAN
+ADS0007E: Internal error
+
